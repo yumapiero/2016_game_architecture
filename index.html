@@ -16,24 +16,24 @@
         {
           // 左目用の情報
           left: 0.0,// 領事領域の左端から右に描画する
-          eye:[ -15, 3, 5],// 左目用カメラのワールド空間での位置
+          eye:[ -5, 5,10],// 左目用カメラのワールド空間での位置
         },
         {
           // 右目用の情報
           left: 0.5,// 表示領域の中央から右に表示する
-          eye:[ +15, 3, 5],// 右目用カメラのワールド空間での位置 
+          eye:[ +5, 5, 10],// 右目用カメラのワールド空間での位置 
         },
       ];
       
       // カメラの初期化
-      var fov = 50;//視野角
+      var fov = 70;//視野角
       var near = 0.1;// 視錐台の全面までの距離
       var far = 100.0;// 視錐台の後ろまでの距離 
       for(var i in views){// 右目用と左目用で2つ用意する
         view = views[i];
         camera = new THREE.PerspectiveCamera( fov, width / height, near, far );// パースがかかったカメラ
         camera.position.set(view.eye[0], view.eye[1], view.eye[2]);// カメラの位置
-        camera.lookAt({x:0, y:0, z:0});// カメラの注視点
+        camera.lookAt({x:3.0, y:0, z:0});// カメラの注視点
         view.camera = camera;
       }
       
