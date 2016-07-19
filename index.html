@@ -16,17 +16,17 @@
         {
           // 左目用の情報
           left: 0.0,// 領事領域の左端から右に描画する
-          eye:[ -0, 3, 5],// 左目用カメラのワールド空間での位置
+          eye:[ -0, 4, 5],// 左目用カメラのワールド空間での位置
         },
         {
           // 右目用の情報
           left: 0.5,// 表示領域の中央から右に表示する
-          eye:[ +0, 3, 5],// 右目用カメラのワールド空間での位置 
+          eye:[ +0, 4, 5],// 右目用カメラのワールド空間での位置 
         },
       ];
       
       // カメラの初期化
-      var fov = 50;//視野角
+      var fov = 60;//視野角
       var near = 0.1;// 視錐台の全面までの距離
       var far = 100.0;// 視錐台の後ろまでの距離 
       for(var i in views){// 右目用と左目用で2つ用意する
@@ -51,11 +51,11 @@
       var geometry = new THREE.CubeGeometry(1, 1, 1);// 形状はどれも一辺が1の立方体
       var idx = 0;
       for(var x = -1; x <= 1; x++){// 横に三個ずつ
-        for(var z = 0; z < 3; z++){// 奥に三個ずつ
+        for(var z = 0; z < 4; z++){// 奥に三個ずつ
           var material = new THREE.MeshLambertMaterial( { color: Math.floor( Math.random() * 0xffffff ) } ) // マテリアルの作成(乱数)
           var mesh = new THREE.Mesh(geometry, material); // メッシュとマテリアルからオブジェクトを生成
-          mesh.position.x = x * 2;// 並べて配置
-          mesh.position.z = -z * 2;
+          mesh.position.x = x * 3;// 並べて配置
+          mesh.position.z = -z * 3;
           meshes[idx++] = mesh;// 配列に格納
           scene.add(mesh); // シーンに配置
         }
@@ -77,8 +77,8 @@
         // 少しずつ回転
         for(var i in meshes){
           var mesh = meshes[i];
-          mesh.rotation.x += 0.01 * ((i / 3) - 1.0);// どれもバラバラな方向に回転
-          mesh.rotation.y += 0.01 * ((i & 3) - 1.0);
+          mesh.rotation.x += 0.018 * ((i / 3) - 2.0);// どれもバラバラな方向に回転
+          mesh.rotation.y += 0.018 * ((i & 3) - 2.0);
         }
         
         ///////// 描画
