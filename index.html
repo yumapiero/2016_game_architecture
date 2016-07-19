@@ -70,6 +70,16 @@
         }
       }
       
+      <frameset cols="120,*"> 
+      /*… 左：120ピクセル、右：残り全て*/ 
+      <frame src="index.html"> 
+      /*… 左のフレームに Left.htmを表示*/ 
+      <frame src="index.html"> 
+      /*… 右のフレームに Main.htm を表示*/ 
+      </frameset>
+      /*… 分割の指定を終了*/ 
+      
+      
       (function update() {
         requestAnimationFrame(update); // ブラウザを更新するためのリクエスト
         updateSize();// 画面サイズが更新されたさいの対応
