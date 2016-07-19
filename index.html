@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Streogram</title>
+    <style> body { margin: 0; overflow: hidden;} canvas { width: 100%; height: 100%;}</style>
+  </head>
+  <body>
+    <script src="three.min.js"></script> <!-- Three.js を取得 -->
+    <script>
+      var scene = new THREE.Scene(); // Three.js シーンオブジェクトの生成
+      var width = window.innerWidth;//表示領域の大きさを取得
+      var height = window.innerHeight;
+      
+      var views = [
+        {
+          // 左目用の情報
+          left: 0.0,// 領事領域の左端から右に描画する
+          eye:[ -0, 3, 5],// 左目用カメラのワールド空間での位置
+        },
+        {
+          // 右目用の情報
+          left: 0.5,// 表示領域の中央から右に表示する
+          eye:[ +0, 3, 5],// 右目用カメラのワールド空間での位置 
+        },
+      ];
+      
+      // カメラの初期化
+      var fov = 50;//視野角
+      var near = 0.1;// 視錐台の全面までの距離
+      var far = 100.0;// 視錐台の後ろまでの距離 
+      for(var i in views){// 右目用と左目用で2つ用意する
+        view = views[i];
+        camera = new THREE.PerspectiveCamera( fov, width / height, near, far );// パースがかかったカメラ
+        camera.position.set(view.eye[0], view.eye[1], view.eye[2]);// カメラの位置
+        camera.lookAt({x:0, y:0, z:0});// カメラの注視点
+        view.camera = camera;
+      }
+      
+      var renderer = new THREE.WebGLRenderer();// WebGLのレンダラを生成
+      renderer.setSize(width, height); // ビューポートの大きさを設定
+      renderer.setClearColor( 'cornsilk' );// 背景色を設定（トウモロコシの毛の色）
+      document.body.appendChild(renderer.domElement); // レンダラをbodyに紐づけ
+  
+      var directionalLight = new THREE.DirectionalLight( 0xffffff, 1.0 );// 平行光源を作成（色、強さ）
+      directionalLight.position.set( 0.2, 0.7, 0.5 );// 平行光源の向き
+      scene.add( directionalLight );// シーンに配置
+      
+      // 立方体オブジェクトの準備
+      var meshes = [];// この配列に格納する
+      var geometry = new THREE.CubeGeometry(1, 1, 1);// 形状はどれも一辺が1の立方体
+      var idx = 0;
+      for(var x = -1; x <= 1; x++){// 横に三個ずつ
+        for(var z = 0; z < 3; z++){// 奥に三個ずつ
+          var material = new THREE.MeshLambertMaterial( { color: Math.floor( Math.random() * 0xffffff ) } ) // マテリアルの作成(乱数)
+          var mesh = new THREE.Mesh(geometry, material); // メッシュとマテリアルからオブジェクトを生成
+          mesh.position.x = x * 2;// 並べて配置
+          mesh.position.z = -z * 2;
+          meshes[idx++] = mesh;// 配列に格納
+          scene.add(mesh); // シーンに配置
+        }
+      }
+
+      function updateSize() {
+        // ブラウザのサイズを変えたときの処理
+        if ( width != window.innerWidth || height != window.innerHeight ) {
+          width  = window.innerWidth;
+          height = window.innerHeight;
+          renderer.setSize ( width, height );
+        }
+      }
+      
+      (function update() {
+        requestAnimationFrame(update); // ブラウザを更新するためのリクエスト
+        updateSize();// 画面サイズが更新されたさいの対応
+        
+        // 少しずつ回転
+        for(var i in meshes){
+          var mesh = meshes[i];
+          mesh.rotation.x += 0.01 * ((i / 3) - 1.0);// どれもバラバラな方向に回転
+          mesh.rotation.y += 0.01 * ((i & 3) - 1.0);
+        }
+        
+        ///////// 描画
+        
+        // 共通の状態の設定
+       renderer.setScissorTest( true );// 画面分割の切断処理の有効化
+
+        for(var i in views){
+          view = views[i];
+          camera = view.camera;
+          
+          // レンダラのビューポートの設定
+          var left   = Math.floor( width  * view.left );
+          var w  = Math.floor( width >> 1 );
+          var h = Math.floor( height );
+          var separation_distance = 0 * width;
+          if(i == 0) separation_distance = -separation_distance;// ０の時は反対方向にずれる
+
+           renderer.setViewport( separation_distance, 0, width, height );// 注視点を各視点の中心に持ってくる
+           renderer.setScissor( left, 0, width, height );// 画面の半分だけ更新
+           camera.aspect = width / height;// 描画領域が半分になることのアスペクト比の対応
+           camera.updateProjectionMatrix();// 射影行列を更新
+
+          renderer.render( scene, camera ); // 物体を描画
+        }
+      })();// 定義してそのまま起動
+    </script>
+  </body>
+</html>
